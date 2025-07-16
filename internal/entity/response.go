@@ -1,6 +1,5 @@
 package entity
 
-type ResponseWriter struct {
-	Code    int
-	Massage string
+type Response struct {
+	Massage string `json:"massage"`
 }
