@@ -3,8 +3,7 @@ package controller
 import (
 	"context"
 	"net/http"
-
-	"go.uber.org/zap"
+	"s3-demo/s3-demo-go/internal/response"
 )
 
 func (c *Controller) Download(w http.ResponseWriter, r *http.Request) {
@@ -12,10 +11,9 @@ func (c *Controller) Download(w http.ResponseWriter, r *http.Request) {
 
 	err := c.service.DownloadFiles(ctx, c.config)
 	if err != nil {
-		w.Write([]byte("Файлы не загружены, произошла ошибка"))
-		c.logg.Error("error controller Download", zap.Error(err))
+		response.ResponseJson(w, http.StatusBadRequest, "Файлы не загружены, произошла ошибка")
 		return
 	}
 
-	w.Write([]byte("Файлы загруженны"))
+	response.ResponseJson(w, http.StatusOK, "Файлы загруженны")
 }
