@@ -1,49 +1,39 @@
 package run
 
 import (
-	"context"
-	"net/http"
 	"s3-demo/s3-demo-go/internal/config"
 	"s3-demo/s3-demo-go/internal/controller"
 	"s3-demo/s3-demo-go/internal/infastructure/logger"
-	"time"
 
-	"github.com/go-chi/chi"
+	fiber "github.com/gofiber/fiber/v2"
 )
 
 type App struct {
-	http   *http.Server
-	router *chi.Mux
+	fiber *fiber.App
 }
 
-func NewApp(conf *config.Config, crl controller.Controller) *App {
-	r := chi.NewRouter()
+func NewApp(conf *config.Config, crl *controller.Controller) *App {
+	r := fiber.New()
 
 	app := &App{
-		http: &http.Server{
-			Addr:    conf.HttpAddrServer,
-			Handler: r,
-		},
-		router: r,
+		fiber: r,
 	}
 
 	app.Router(crl)
 	return app
 }
 
-func (a *App) Router(crl controller.Controller) {
-	a.router.Get("/create", crl.CreateMany)
-	a.router.Get("/get", crl.Download)
+func (a *App) Router(crl *controller.Controller) {
+	a.fiber.Get("/create", crl.CreateMany)
+	a.fiber.Get("/get", crl.Download)
 }
 
-func (a *App) Serve(logg *logger.ZapLogger) error {
+func (a *App) Serve(logg *logger.ZapLogger, conf *config.Config) error {
 	logg.Info("Сервер запущен")
-	return a.http.ListenAndServe()
+	return a.fiber.Listen(conf.HttpAddrServer)
 }
 
 func (a *App) Shutdown(logg *logger.ZapLogger) error {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 	logg.Info("Сервер получил сигнал и прекратил свою работу")
-	return a.http.Shutdown(ctx)
+	return a.fiber.Shutdown()
 }

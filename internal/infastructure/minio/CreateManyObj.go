@@ -1,4 +1,4 @@
-package monio
+package minio
 
 import (
 	"bytes"
