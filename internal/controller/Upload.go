@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"context"
 	"fmt"
 
 	fiber "github.com/gofiber/fiber/v2"
@@ -9,7 +8,7 @@ import (
 
 func (contrl *Controller) CreateMany(c *fiber.Ctx) error {
 
-	ctx := context.Background()
+	ctx := c.Context()
 
 	err := contrl.service.UploadFiles(ctx, contrl.config)
 	if err != nil {

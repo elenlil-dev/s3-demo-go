@@ -1,15 +1,13 @@
 package controller
 
 import (
-	"context"
 	"fmt"
 
 	fiber "github.com/gofiber/fiber/v2"
 )
 
 func (contrl *Controller) Download(c *fiber.Ctx) error {
-	ctx := context.Background()
-	c.Accepts("application/json")
+	ctx := c.Context()
 
 	err := contrl.service.DownloadFiles(ctx, contrl.config)
 	if err != nil {
