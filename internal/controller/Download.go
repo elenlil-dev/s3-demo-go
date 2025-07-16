@@ -2,18 +2,26 @@ package controller
 
 import (
 	"context"
-	"net/http"
-	"s3-demo/s3-demo-go/internal/response"
+	"fmt"
+
+	fiber "github.com/gofiber/fiber/v2"
 )
 
-func (c *Controller) Download(w http.ResponseWriter, r *http.Request) {
+func (contrl *Controller) Download(c *fiber.Ctx) error {
 	ctx := context.Background()
+	c.Accepts("application/json")
 
-	err := c.service.DownloadFiles(ctx, c.config)
+	err := contrl.service.DownloadFiles(ctx, contrl.config)
 	if err != nil {
-		response.ResponseJson(w, http.StatusBadRequest, "Файлы не загружены, произошла ошибка")
-		return
+		err := c.JSON(fiber.Map{"message": "Файлы не загружены, произошла ошибка"})
+		if err != nil {
+			return fmt.Errorf("error json fiber:%v", err)
+		}
 	}
 
-	response.ResponseJson(w, http.StatusOK, "Файлы загруженны")
+	err = c.JSON(fiber.Map{"message": "Файлы успешно загружены"})
+	if err != nil {
+		return fmt.Errorf("error json fiber:%v", err)
+	}
+	return nil
 }

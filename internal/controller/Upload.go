@@ -2,19 +2,27 @@ package controller
 
 import (
 	"context"
-	"net/http"
+	"fmt"
 
-	"go.uber.org/zap"
+	fiber "github.com/gofiber/fiber/v2"
 )
 
-func (c *Controller) CreateMany(w http.ResponseWriter, r *http.Request) {
+func (contrl *Controller) CreateMany(c *fiber.Ctx) error {
+
 	ctx := context.Background()
 
-	err := c.service.UploadFiles(ctx, c.config)
+	err := contrl.service.UploadFiles(ctx, contrl.config)
 	if err != nil {
-		w.Write([]byte("Файлы не загружены в Монио, произошла ошибка"))
-		c.logg.Error("error c.service.Create in controller", zap.Error(err))
-		return
+		err := c.JSON(fiber.Map{"message": "Файлы не загружены в Монио, произошла ошибка"})
+		if err != nil {
+			return fmt.Errorf("error json fiber:%v", err)
+		}
+
 	}
-	w.Write([]byte("Файлы загружены в Монио"))
+
+	err = c.JSON(fiber.Map{"message": "Файлы загружены в Монио"})
+	if err != nil {
+		return fmt.Errorf("error json fiber:%v", err)
+	}
+	return nil
 }

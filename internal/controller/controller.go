@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"s3-demo/s3-demo-go/internal/config"
-	"s3-demo/s3-demo-go/internal/infastructure/logger"
 )
 
 type Service interface {
@@ -14,13 +13,11 @@ type Service interface {
 type Controller struct {
 	service Service
 	config  *config.Config
-	logg    *logger.ZapLogger
 }
 
-func NewController(service Service, config *config.Config, logg *logger.ZapLogger) *Controller {
+func NewController(service Service, config *config.Config) *Controller {
 	return &Controller{
 		service: service,
 		config:  config,
-		logg:    logg,
 	}
 }
