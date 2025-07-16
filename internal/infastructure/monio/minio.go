@@ -1,0 +1,38 @@
+package monio
+
+import (
+	"context"
+	"s3-demo/s3-demo-go/internal/config"
+
+	"github.com/minio/minio-go/v7"
+	"github.com/minio/minio-go/v7/pkg/credentials"
+)
+
+type MinioClient struct {
+	client *minio.Client
+}
+
+func NewMinioClient(ctx context.Context, conf *config.Config) (*MinioClient, error) {
+	client, err := minio.New(conf.MinioEndpoint, &minio.Options{
+		Creds:  credentials.NewStaticV4(conf.MinioRootUser, conf.MinioRootPassword, ""),
+		Secure: conf.MinioUseSSL,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	c := &MinioClient{client: client}
+
+	ok, err := c.client.BucketExists(ctx, conf.MinioBucketName)
+	if err != nil {
+		return nil, err
+	}
+	if !ok {
+		err := c.client.MakeBucket(ctx, conf.MinioBucketName, minio.MakeBucketOptions{})
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return c, nil
+}
