@@ -32,8 +32,8 @@ func NewApp(conf *config.Config, crl controller.Controller) *App {
 }
 
 func (a *App) Router(crl controller.Controller) {
-	a.router.Post("/create", crl.CreateMany)
-	a.router.Post("/get", crl.Download)
+	a.router.Get("/create", crl.CreateMany)
+	a.router.Get("/get", crl.Download)
 }
 
 func (a *App) Serve(logg *logger.ZapLogger) error {
