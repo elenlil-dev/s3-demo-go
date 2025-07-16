@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"net/http"
 	"os"
 	"os/signal"
@@ -18,7 +17,6 @@ import (
 )
 
 func main() {
-	ctx := context.Background()
 
 	logg, err := logger.NewZapLogger()
 	if err != nil {
@@ -29,12 +27,12 @@ func main() {
 		logg.Error("error in main config", zap.Error(err))
 	}
 
-	repo, err := monio.NewMinioClient(ctx, cnf)
+	repo, err := monio.NewMinioClient(cnf)
 	if err != nil {
 		logg.Fatal("error init monio:%v", zap.Error(err))
 	}
 	svc := service.NewService(repo)
-	crl := controller.NewController(svc, cnf, logg, ctx)
+	crl := controller.NewController(svc, cnf, logg)
 
 	stop := make(chan os.Signal, 1)
 	signal.Notify(stop, os.Interrupt, syscall.SIGTERM)
@@ -48,7 +46,7 @@ func main() {
 	}()
 	<-stop
 
-	err = s.Shutdown(ctx, logg)
+	err = s.Shutdown(logg)
 	if err != nil {
 		logg.Error("error in main Shutdown", zap.Error(err))
 	}

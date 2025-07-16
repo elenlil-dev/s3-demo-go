@@ -15,14 +15,12 @@ type Controller struct {
 	service Service
 	config  *config.Config
 	logg    *logger.ZapLogger
-	ctx     context.Context
 }
 
-func NewController(service Service, config *config.Config, logg *logger.ZapLogger, ctx context.Context) *Controller {
+func NewController(service Service, config *config.Config, logg *logger.ZapLogger) *Controller {
 	return &Controller{
 		service: service,
 		config:  config,
 		logg:    logg,
-		ctx:     ctx,
 	}
 }

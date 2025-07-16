@@ -6,6 +6,7 @@ import (
 	"s3-demo/s3-demo-go/internal/config"
 	"s3-demo/s3-demo-go/internal/controller"
 	"s3-demo/s3-demo-go/internal/infastructure/logger"
+	"time"
 
 	"github.com/go-chi/chi"
 )
@@ -40,7 +41,9 @@ func (a *App) Serve(logg *logger.ZapLogger) error {
 	return a.http.ListenAndServe()
 }
 
-func (a *App) Shutdown(ctx context.Context, logg *logger.ZapLogger) error {
+func (a *App) Shutdown(logg *logger.ZapLogger) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 	logg.Info("Сервер получил сигнал и прекратил свою работу")
 	return a.http.Shutdown(ctx)
 }

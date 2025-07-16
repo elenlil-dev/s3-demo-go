@@ -12,7 +12,9 @@ type MinioClient struct {
 	client *minio.Client
 }
 
-func NewMinioClient(ctx context.Context, conf *config.Config) (*MinioClient, error) {
+func NewMinioClient(conf *config.Config) (*MinioClient, error) {
+	ctx := context.Background()
+
 	client, err := minio.New(conf.MinioEndpoint, &minio.Options{
 		Creds:  credentials.NewStaticV4(conf.MinioRootUser, conf.MinioRootPassword, ""),
 		Secure: conf.MinioUseSSL,
